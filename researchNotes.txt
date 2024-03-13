@@ -1,0 +1,88 @@
+Notes:
+- Calculating the physics parameters was relatively straight forward. 
+- The one down side is that the Pygame physics simulation is 10x faster than in real life. 
+- Visualizing the orbits was difficult since the periapsis and apoaisis of the orbits 
+were not readily available to create accurate calculations. 
+- Instead we opted to create a sample path which was then used to predict the rest of 
+the orbit. 
+- Simple images cannot be rotated. However images loaded as objects can be rotated. 
+
+- A simple formula was found that can be used to calculate the apoapsis. S = (v^2 - u^2) / 2a
+- One notable issue with that equation is that is requires the 'a' apoapsis variable to 
+calculate the displacement. 
+- The displacement 'v' variable also requires the apoapsis, creating a circular dependency 
+issue with the equation. 
+- After numerous other attempts at trying to calculate the apoapsis using physics, we are 
+constantly running into circular dependency issues. 
+- We will need to research another reward system for the AI that involve the use of the 
+variation of distance between the craft and the planet. 
+
+- The Python package we will be using is OpenAI gym. This is the same package that 
+the example orbit research used. 
+- To facilitate the reinforcement learning, we created a reset function that resets the 
+ship's parameters. 
+- One notable limitation of using a list of distances to calculate the apoapsis, 
+periapsis, and eccentricity of the rocket's orbit is that one can only obtain the 
+values after the craft has completed an orbit. 
+
+- To run the AI, we installed Anaconda. 
+- We created an environment named "cs548".
+- We also installed jupyter to run this environment. 
+- McCollocj-Pitts Neuron Model for project
+- Restarting the kernel is the only way to reset the game in jupyter notebook. 
+- We set the gravity, velocity, apoapsis, periapsis, and eccentricity as the variables 
+for determining the Mean Absolute Percentage Error function to determine the loss. 
+
+- We added in a random planet generator to ensure the run was viable for more than one 
+mass and radius setting. 
+- The use of a RegressorNeuralNetwork yielded an error due to the shape of the input
+variables. We could not determine accurately what dimensions we needed. 
+- The use of a DynamicRegressor Network allowed us to create a network that did not 
+depend on a particular neural network size. 
+- Torch does not have a mean absolute percentage loss, however the Mean Absolute Error
+is as close enough function that the Torch library includes
+- We used the sigmoid activation function to restrict the values of the action to 
+fall within 0 and 1. 
+- We need the values of the action variable to fall within a certain range to allow 
+for the randomized selection of numbers 1 to 5. 
+
+- Once we assigned a number to the 5 possible actions, rotate right, rotate left, 
+throttle up, apply throttle, and throttle down, the game was able to call upon those
+actions by calling the action's corresponding function. 
+- What we had to do next is adjust the learning rate and hidden layers to get the 
+spacecraft's reinforcement learning algorithm to move it appropriately. 
+- One notable issue with using the action variable as a determinant for what actions 
+should be made is that the action variable clusters at the highest value. 
+- As a consequence, the action gets stuck on the action corresponding to 5. 
+
+- S = (v^2 - u^2) / 2a, turns out a is acceleration, not the apoapsis, this eliminates 
+the circular dependency issue. 
+- The S is also the semi-major axis, not the apoapsis
+- A more reliable way to find the semi major axis is to first find Specific orbital energy 
+first using the formula: E = (v^2 / 2) - ((G*M) / r). 
+- The semi major axis is then obtained using the result from E, in the formula below: 
+S = -(G * M) / (2 * E). 
+- The Apoapsis/Periapsis is obtained using the semi major axis A and specific energy E: 
+A = S√(1 - (E*S) / (G*M)). 1 + is used for periapsis
+- Due to issues with the static apoapsis calculations, we used the path array to 
+obtain the value of apoapsis. 
+
+
+sources: 
+- project inspiration: https://scholarworks.wmich.edu/cgi/viewcontent.cgi?article=4537&context=dissertations
+- rocket equation: https://pressbooks.online.ucf.edu/osuniversityphysics/chapter/9-7-rocket-propulsion/#:~:text=mim).-,%CE%94%20v%20%3D%20u%20ln%20(%20m%20i%20m%20)%20.,m0%20down%20to%20m.
+- orbital mechanics: https://oer.pressbooks.pub/lynnanegeorge/chapter/chapter-1/
+- finding periapsis: https://courses.lumenlearning.com/suny-osuniversityphysics/chapter/13-5-keplers-laws-of-planetary-motion/
+- orbit semi major axis: https://physics.stackexchange.com/questions/295431/how-can-i-calculate-the-semi-major-axis-from-velocity-position-and-pull?utm_source=hashnode&utm_medium=hashnode+rix&utm_campaign=rix_chatbot_answer
+- Calculating apoapsis (Circular dependency): https://www.reddit.com/r/KerbalSpaceProgram/comments/27jht8/how_to_calculate_the_apoapsis/
+- Apoapsis change: https://orbital-mechanics.space/the-orbit-equation/orbital-nomenclature.html?utm_source=hashnode&utm_medium=hashnode+rix&utm_campaign=rix_chatbot_answer
+- OpenAI Gymnasium reinforcement learning: https://gymnasium.farama.org/
+- Specific Orbital Energy: https://deutsch.physics.ucsc.edu/6A/book/gravity/node15.html
+- Apoapsis without Eccentricity: https://faculty.fiu.edu/~vanhamme/ast3213/orbits.pdf
+- More Related Work Research: https://www.aiaa.org/docs/default-source/default-document-library/publications/ondeepreinforcementlearningforspacecraftguidance.pdf
+- History of space flight computers: https://history.nasa.gov/computers/contents.html
+- First space game: https://www.analogue.co/developer/spacewar
+- Fuzzy logic: https://www.geeksforgeeks.org/fuzzy-logic-introduction/
+- Mean Absolute Error: https://www.statisticshowto.com/absolute-error/
+- Dynamic Regression neural network: https://pyflux.readthedocs.io/en/latest/dyn_lin.html
+- Godot reinforcement learning: https://github.com/edbeeching/godot_rl_agents
